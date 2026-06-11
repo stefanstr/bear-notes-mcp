@@ -78,8 +78,8 @@ export function insertInlineTags(
     return text ? `${text}\n${tagLine}` : tagLine;
   }
 
-  const titleMatch = text.match(/^(#\s+.+?)(?:\n|$)/);
-  if (!titleMatch) {
+  const titleLine = getLeadingH1Line(text);
+  if (!titleLine) {
     if (!text) return tagLine;
     const merged = mergeWithLeadingTagLine(text, tagLine);
     if (merged) return merged;
@@ -87,8 +87,7 @@ export function insertInlineTags(
     return `${tagLine}${separator}\n${text}`;
   }
 
-  const titleLine = titleMatch[1];
-  const remainingBody = text.slice(titleMatch[0].length);
+  const remainingBody = text.slice(titleLine.length + (text[titleLine.length] === '\n' ? 1 : 0));
   const merged = mergeWithLeadingTagLine(remainingBody, tagLine);
   if (merged) return [titleLine, merged].join('\n');
 
@@ -99,6 +98,13 @@ export function insertInlineTags(
   }
 
   return segments.join('\n');
+}
+
+function getLeadingH1Line(text: string): string | null {
+  const lineEnd = text.indexOf('\n');
+  const firstLine = lineEnd === -1 ? text : text.slice(0, lineEnd);
+  const hasH1Marker = firstLine[0] === '#' && (firstLine[1] === ' ' || firstLine[1] === '\t');
+  return hasH1Marker && firstLine.slice(2).trim().length > 0 ? firstLine : null;
 }
 
 function mergeWithLeadingTagLine(text: string, tagLine: string): string | null {

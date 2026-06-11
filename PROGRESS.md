@@ -22,3 +22,8 @@
 ## Remaining work (for PR author)
 - Run system tests with Bear open: `npm run test:system`
 - Manual verification: create a frontmatter note via MCP, add a tag, confirm structure in Bear
+
+## Latest verification
+
+- `npx vitest run src/operations/note-conventions.test.ts` passed
+- `npx vitest run --config vitest.system.config.ts tests/system/frontmatter.test.ts` failed in this environment because Bear is not installed / not open, so `bear://` x-callback URLs cannot be executed here
